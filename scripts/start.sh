@@ -48,7 +48,7 @@ if [ ! -s "$meta_cache" ] || [ -n "$(find "$meta_cache" -mmin +360 2>/dev/null)"
 fi
 meta_args=()
 if [ -s "$meta_cache" ]; then cp "$meta_cache" "$state/github-meta.json"; chmod 0644 "$state/github-meta.json"; meta_args=(-github-meta "$state/github-meta.json"); fi
-"$bin" check -policy "$state/policy.yml" "${meta_args[@]}"
+"$bin" check -policy "$state/policy.yml" -mode "$mode" "${meta_args[@]}"
 t_check=$(ms)
 
 how=none
@@ -86,7 +86,9 @@ case "$how" in
     docker image inspect egress-ci-scratch:1 >/dev/null 2>&1 \
       || tar -cf - --files-from /dev/null | docker import - egress-ci-scratch:1 >/dev/null
     docker rm -f "$name" >/dev/null 2>&1 || true
-    docker run -d --name "$name" --privileged --network host --user 0:0 \
+    # The host's cgroup namespace: nftables reads a cgroup path relative to the namespace of whoever loads the rule
+    # (the Docker daemon's unit, for its connections).
+    docker run -d --name "$name" --privileged --network host --cgroupns host --user 0:0 \
       -v /:/host:ro -v /etc/ssl:/etc/ssl:ro -v "$state:$state" -v "$dockersock:$dockersock" \
       --entrypoint "$bin" egress-ci-scratch:1 "${args[@]}" -chroot /host -lock on >/dev/null
     ;;
@@ -137,4 +139,4 @@ fi
 echo "proxy=$proxy" >>"$GITHUB_OUTPUT"
 total=$(ms)
 echo "$total" >"$state/start_ms"
-echo "OpenWAF Egress CI: proxy $proxy, lock $(field lock) (via $how), Docker $(field docker), GitHub preset $(field github_meta), started in ${total} ms (binary, policy and GitHub list ${t_check} ms, sidecar ready ${t_ready} ms)"
+echo "OpenWAF Egress CI: mode $(field mode), proxy $proxy, lock $(field lock) (via $how), Docker $(field docker), daemon pulls $(field daemon), GitHub preset $(field github_meta), started in ${total} ms (binary, policy and GitHub list ${t_check} ms, sidecar ready ${t_ready} ms)"
