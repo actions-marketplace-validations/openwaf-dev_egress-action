@@ -6,6 +6,8 @@ cmd/egress-ci/egress_ci_test.go	^(1\.1\.1\.1|104\.18\.24\.232|140\.82\.112\.3|14
 tests/probes.sh	^1\.1\.1\.1$
 # Docker's address pool (172.16.0.0/12): the lock leaves the runner's Docker networks to their own rules.
 cmd/egress-ci/nft.go	^172\.16\.0\.0$
+# The daemon's connections to Docker's pool and to link-local addresses stay out of the transparent proxy.
+cmd/egress-ci/daemon.go	^(172\.16\.0\.0|169\.254\.0\.0)$
 scripts/start.sh	^172\.16\.0\.0$
 README.md	^172\.16\.0\.0$
 README.es.md	^172\.16\.0\.0$
