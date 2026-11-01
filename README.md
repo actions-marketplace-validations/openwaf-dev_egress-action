@@ -21,7 +21,7 @@ Product documentation: [developers.openwaf.dev/egress/ci/quickstart/](https://de
 
    ```yaml
    steps:
-     - uses: actions/checkout@v4
+     - uses: actions/checkout@v5
      - uses: openwaf-dev/egress-action@v0.3.2
      - run: make test
    ```

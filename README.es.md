@@ -22,7 +22,7 @@ Documentación del producto: [developers.openwaf.dev/es/egress/ci/quickstart/](h
 
    ```yaml
    steps:
-     - uses: actions/checkout@v4
+     - uses: actions/checkout@v5
      - uses: openwaf-dev/egress-action@v0.3.2
      - run: make test
    ```
